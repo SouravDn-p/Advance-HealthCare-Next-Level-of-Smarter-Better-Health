@@ -16,7 +16,7 @@ export default function Banner() {
           <Image
             width={400}
             height={400}
-            src="/public/assets/handshake.png"
+            src="/assets/handshake.png"
             alt="Digital healthcare illustration showing doctor and patient interaction"
             className="w-full h-auto"
           />
