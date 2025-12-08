@@ -18,8 +18,9 @@ import {
   LayoutDashboard,
   Wallet,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import LogoutButton from "@/components/LogoutButton";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { toggleTheme } from "@/redux/api/slice/uiSlice";
 
 type NavItemProps = {
   href: string;
@@ -38,7 +39,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, children, onClick }) => {
       className={`
         relative flex items-center gap-2 rounded-lg px-4 py-2
         transition-all duration-200
-        hover:bg-gray-100 dark:hover:bg-gray-800
+        hover:bg-gray-100 
         ${isActive ? "font-medium text-blue-600 dark:text-blue-400" : ""}
         after:absolute after:bottom-0 after:left-0
         after:h-0.5 after:w-full after:origin-left
@@ -57,8 +58,12 @@ const NavItem: React.FC<NavItemProps> = ({ href, children, onClick }) => {
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const isDarkMode = false;
-  const { user, isAuthenticated } = useAuth();
+  const theme = useAppSelector((state) => state.ui.theme);
+  const isDarkMode = theme == "dark" ? true : false;
+  const dispatch = useAppDispatch();
+
+  const user = useAppSelector((state) => state.auth.user);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   return (
     <div className="sticky top-4 z-50 mx-2 md:mx-8">
@@ -122,6 +127,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               {/* Theme Toggle */}
               <button
+                onClick={() => dispatch(toggleTheme())}
                 className={`rounded-lg p-2 transition-colors ${
                   isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"
                 }`}
@@ -280,7 +286,11 @@ export default function Navbar() {
 
               {/* Mobile Toggle */}
               <button
-                className="md:hidden rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                className={`md:hidden rounded-lg p-2 transition-colors   ${
+                  isDarkMode
+                    ? "text-gray-200 hover:bg-gray-800"
+                    : "text-gray-800 hover:bg-gray-100"
+                }`}
                 onClick={() => setIsMenuOpen((v) => !v)}
               >
                 {isMenuOpen ? (
@@ -312,14 +322,20 @@ export default function Navbar() {
                   <User className="h-4 w-4" />
                   Contact Us
                 </NavItem>
-                
+
                 {/* Auth Links for Mobile */}
                 {!isAuthenticated && (
                   <>
-                    <NavItem href="/auth/login" onClick={() => setIsMenuOpen(false)}>
+                    <NavItem
+                      href="/auth/login"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
                       Login
                     </NavItem>
-                    <NavItem href="/auth/register" onClick={() => setIsMenuOpen(false)}>
+                    <NavItem
+                      href="/auth/register"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
                       Register
                     </NavItem>
                   </>

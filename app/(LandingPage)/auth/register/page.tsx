@@ -1,4 +1,3 @@
-// app/register/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -14,13 +13,19 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 import LoginRedirect from "@/components/LoginRedirect";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { useRegisterMutation } from "@/redux/api/apis/authApi";
+import { registerStart, registerSuccess, registerFailure } from "@/redux/api/slice/authSlice";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { isLoading, error, register } = useAuth();
+  const dispatch = useAppDispatch();
+  const { isLoading, error } = useAppSelector((state) => state.auth);
   
+  // RTK Query mutation hook
+  const [registerMutation, { isLoading: isRegisterLoading }] = useRegisterMutation();
+
   const [localError, setLocalError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -43,24 +48,29 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLocalError(null);
+    dispatch(registerStart());
 
     // Validate password
     const validationError = validatePassword(password);
     if (validationError) {
-      setLocalError(validationError);
+      const errorMsg = `Password must contain: ${validationError}`;
+      dispatch(registerFailure(errorMsg));
+      setLocalError(errorMsg);
       return;
     }
 
     if (!name || !email) {
       const errorMessage = "Name and email are required.";
+      dispatch(registerFailure(errorMessage));
       setLocalError(errorMessage);
       return;
     }
 
     try {
-      const success = await register({ name, email, password, photoURL });
+      const result = await registerMutation({ name, email, password, photoURL }).unwrap();
       
-      if (success) {
+      if (result.success) {
+        dispatch(registerSuccess());
         toast.success("Registration successful", {
           description: "Redirecting to login...",
         });
@@ -71,14 +81,16 @@ export default function RegisterPage() {
         setPhotoURL("");
         router.push("/login");
       } else {
-        const errorMessage = error || "Registration failed";
+        const errorMessage = result.message || "Registration failed";
+        dispatch(registerFailure(errorMessage));
         setLocalError(errorMessage);
         toast.error("Registration failed", {
           description: errorMessage,
         });
       }
     } catch (err: any) {
-      const errorMessage = "Registration failed. Please try again.";
+      const errorMessage = err?.data?.message || "Registration failed. Please try again.";
+      dispatch(registerFailure(errorMessage));
       setLocalError(errorMessage);
       toast.error("Registration failed", {
         description: errorMessage,
@@ -99,6 +111,8 @@ export default function RegisterPage() {
     toast.success("Google registration successful!");
     router.push("/login");
   };
+
+  const isLoadingAny = isLoading || isRegisterLoading;
 
   return (
     <LoginRedirect>
@@ -230,10 +244,10 @@ export default function RegisterPage() {
                 {/* Submit */}
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoadingAny}
                   className="w-full flex items-center justify-center px-4 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300 disabled:opacity-50"
                 >
-                  {isLoading ? (
+                  {isLoadingAny ? (
                     <Loader className="w-5 h-5 animate-spin" />
                   ) : (
                     "Create Account"
@@ -266,10 +280,10 @@ export default function RegisterPage() {
               {/* Google Button (Mock) */}
               <button
                 onClick={handleGoogleRegister}
-                disabled={isLoading}
+                disabled={isLoadingAny}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-300 disabled:opacity-50"
               >
-                {isLoading ? (
+                {isLoadingAny ? (
                   <Loader className="w-5 h-5 animate-spin" />
                 ) : (
                   <>

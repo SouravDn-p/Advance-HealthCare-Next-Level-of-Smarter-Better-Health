@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
 import { Loader } from "lucide-react";
+import { useAppSelector } from "@/redux/hooks";
+import { RootState } from "@/redux/store/store";
 
 interface LoginRedirectProps {
   children: React.ReactNode;
@@ -11,7 +12,9 @@ interface LoginRedirectProps {
 
 export default function LoginRedirect({ children }: LoginRedirectProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAppSelector(
+    (state: RootState) => state.auth
+  );
 
   useEffect(() => {
     // Redirect to dashboard if already authenticated

@@ -2,11 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface UiState {
   theme: "light" | "dark";
-  language: "Arabic" | "English";
+  language: "Bangla" | "English";
 }
 
 const initialState: UiState = {
-  theme: "light",
+  theme: "dark",
   language: "English",
 };
 
@@ -18,16 +18,17 @@ const uiSlice = createSlice({
       state.theme = state.theme === "light" ? "dark" : "light";
     },
     toggleLanguage: (state) => {
-      state.language = state.language === "English" ? "Arabic" : "English";
+      state.language = state.language === "English" ? "Bangla" : "English";
     },
     setTheme: (state, action: PayloadAction<"light" | "dark">) => {
       state.theme = action.payload;
     },
-    setLanguage: (state, action: PayloadAction<"Arabic" | "English">) => {
+    setLanguage: (state, action: PayloadAction<"Bangla" | "English">) => {
       state.language = action.payload;
     },
   },
 });
 
-export const { toggleTheme, toggleLanguage, setTheme, setLanguage } = uiSlice.actions;
+export const { toggleTheme, toggleLanguage, setTheme, setLanguage } =
+  uiSlice.actions;
 export default uiSlice.reducer;

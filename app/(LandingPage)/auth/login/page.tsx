@@ -1,4 +1,3 @@
-// app/login/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,12 +5,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, Loader } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 import LoginRedirect from "@/components/LoginRedirect";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { useLoginMutation } from "@/redux/api/apis/authApi";
+import { loginStart, loginSuccess, loginFailure } from "@/redux/api/slice/authSlice";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { isLoading, error, login } = useAuth();
+  const dispatch = useAppDispatch();
+  const { isLoading, error } = useAppSelector((state) => state.auth);
+
+  // RTK Query mutation hook
+  const [loginMutation, { isLoading: isLoginLoading }] = useLoginMutation();
 
   // UI-only state
   const [email, setEmail] = useState("");
@@ -19,32 +24,47 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  // Email/Password Login with AuthContext
+  // Email/Password Login with Redux
   const handleEmailPasswordLogin = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
     setLocalError(null);
+    dispatch(loginStart());
 
     try {
-      const success = await login({ email, password });
+      const result = await loginMutation({ email, password }).unwrap();
       
-      if (success) {
+      if (result.success) {
+        // Fix the type issue by ensuring role is not undefined
+        const userWithRole = {
+          ...result.user,
+          role: result.user.role || "user" // Default to "user" if role is undefined
+        };
+        
+        dispatch(loginSuccess({
+          user: userWithRole,
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken
+        }));
+        
         toast.success("Login successful", {
           description: "Welcome back!",
         });
-        
-        // Redirect based on user role (you might want to get this from the auth context)
+
+        // Redirect based on user role
         router.push("/userDashboard");
       } else {
-        const errorMessage = error || "Login failed";
+        const errorMessage = result.message || "Login failed";
+        dispatch(loginFailure(errorMessage));
         setLocalError(errorMessage);
         toast.error("Login failed", {
           description: errorMessage,
         });
       }
     } catch (err: any) {
-      const errorMessage = "Login failed. Please try again.";
+      const errorMessage = err?.data?.message || "Login failed. Please try again.";
+      dispatch(loginFailure(errorMessage));
       setLocalError(errorMessage);
       toast.error("Login failed", {
         description: errorMessage,
@@ -65,6 +85,8 @@ export default function LoginPage() {
     toast.success("Welcome! Google sign-in successful");
     router.push("/userDashboard");
   };
+
+  const isLoadingAny = isLoading || isLoginLoading;
 
   return (
     <LoginRedirect>
@@ -154,10 +176,10 @@ export default function LoginPage() {
                   {/* Submit */}
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoadingAny}
                     className="w-full flex items-center justify-center px-4 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300 disabled:opacity-50"
                   >
-                    {isLoading ? (
+                    {isLoadingAny ? (
                       <Loader className="w-5 h-5 animate-spin" />
                     ) : (
                       "Sign In"
@@ -189,10 +211,10 @@ export default function LoginPage() {
                 {/* Google Button (Mock) */}
                 <button
                   onClick={handleGoogleSignIn}
-                  disabled={isLoading}
+                  disabled={isLoadingAny}
                   className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-300 disabled:opacity-50"
                 >
-                  {isLoading ? (
+                  {isLoadingAny ? (
                     <Loader className="w-5 h-5 animate-spin" />
                   ) : (
                     <>

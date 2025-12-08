@@ -10,9 +10,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-
 import uiReducer from "@/redux/api/slice/uiSlice";
-import surveyReducer from "@/redux/api/slice/surveySlice";
 import authReducer from "@/redux/api/slice/authSlice";
 import { baseApi } from "@/redux/api/baseApi";
 
@@ -20,7 +18,6 @@ import { baseApi } from "@/redux/api/baseApi";
 const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
   ui: uiReducer,
-  survey: surveyReducer,
   auth: authReducer,
 });
 
@@ -28,7 +25,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["ui", "survey", "auth"], // add "survey" if you want to persist survey state
+  whitelist: ["ui", "auth"], // add "survey" if you want to persist survey state
 };
 
 // Step 3: Create persisted reducer
