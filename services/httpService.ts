@@ -1,4 +1,5 @@
-import { useAuth } from "@/contexts/AuthContext";
+// Note: This service is not currently used in the application as we're using RTK Query for API calls
+// This is kept for reference but may need to be updated to work with Redux state if needed
 
 class HttpService {
   private baseUrl: string;
@@ -8,17 +9,18 @@ class HttpService {
     this.baseUrl = baseUrl;
   }
 
-  // Get access token from auth context
+  // In a real implementation, you would get the access token from Redux store
+  // For now, this is a placeholder that returns null
   private getAccessToken(): string | null {
-    // This is a simplified approach. In a real app, you might want to use a more sophisticated method
-    // to get the access token, such as from a store or context
+    // This would need to be implemented to get the token from Redux state
+    // For example, using a store accessor or by passing the token as a parameter
     return null;
   }
 
-  // Refresh token
+  // Refresh token - placeholder implementation
   private async refreshAccessToken(): Promise<string | null> {
-    // In a real implementation, you would use the useAuth hook or a similar mechanism
-    // to get the refresh token and call the refresh endpoint
+    // In a real implementation, you would use RTK Query mutations or direct API calls
+    // to refresh the token using the refresh token from Redux state
     return null;
   }
 

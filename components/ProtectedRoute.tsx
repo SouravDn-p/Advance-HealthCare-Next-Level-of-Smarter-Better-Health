@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppSelector } from "@/redux/hooks";
 import { Loader } from "lucide-react";
 
 interface ProtectedRouteProps {
@@ -15,7 +15,7 @@ export default function ProtectedRoute({
   requiredRole 
 }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     // Redirect to login if not authenticated

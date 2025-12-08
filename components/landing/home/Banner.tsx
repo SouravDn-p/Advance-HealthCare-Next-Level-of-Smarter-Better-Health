@@ -1,39 +1,37 @@
+"use client";
+
+import { useAppSelector } from "@/redux/hooks";
 import Image from "next/image";
 
 export default function Banner() {
-  const theme = "white";
+  const theme = useAppSelector((state) => state.ui.theme);
+  const darkMode = theme == "dark" ? true : false;
   return (
     <section
-      className={`container mx-auto px-4 py-8 md:py-12 transition-all duration-300 
-      ${
-        theme === "dark"
-          ? "bg-gray-900 text-gray-200"
-          : "bg-white text-gray-800"
-      }`}
+      className={` rounded-lg mx-12  transition-all duration-300 
+      ${darkMode ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800"}`}
     >
-      <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-        <div className="w-full md:w-1/2 max-w-[400px]">
+      <div className="flex  flex-col md:flex-row items-center gap-8 md:gap-12 ">
+        <div className="w-full md:w-1/2 max-w-[600px]  mx-auto">
           <Image
-            width={400}
-            height={400}
+            width={800}
+            height={800}
             src="/assets/handshake.png"
             alt="Digital healthcare illustration showing doctor and patient interaction"
             className="w-full h-auto"
           />
         </div>
 
-        <div className="w-full md:w-1/2 space-y-4">
+        <div className="w-full md:w-1/2 space-y-4 p-4 mx-auto">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif">
             <span
-              className={`${
-                theme === "dark" ? "text-yellow-400" : "text-[#8B4513]"
-              }`}
+              className={`${darkMode ? "text-yellow-400" : "text-[#8B4513]"}`}
             >
               Welcome to{" "}
             </span>
             <span
               className={`${
-                theme === "dark" ? "text-blue-400" : "text-[#483D8B]"
+                darkMode ? "text-blue-400" : "text-[#483D8B]"
               } font-semibold`}
             >
               Advance Health Service
@@ -42,7 +40,7 @@ export default function Banner() {
 
           <p
             className={`text-lg md:text-xl italic ${
-              theme === "dark" ? "text-gray-400" : "text-gray-700"
+              darkMode ? "text-gray-400" : "text-gray-700"
             }`}
           >
             - Your trusted digital healthcare platform for secure, fast, and
@@ -53,22 +51,18 @@ export default function Banner() {
           <div className="space-y-2">
             <p className="text-xl md:text-2xl">
               <span
-                className={`${
-                  theme === "dark" ? "text-green-400" : "text-green-600"
-                }`}
+                className={`${darkMode ? "text-green-400" : "text-green-600"}`}
               >
                 Health at your fingertips,{" "}
               </span>
               <span
-                className={`${
-                  theme === "dark" ? "text-gray-300" : "text-gray-800"
-                }`}
+                className={`${darkMode ? "text-gray-300" : "text-gray-800"}`}
               >
                 quick and{" "}
               </span>
               <span
                 className={`${
-                  theme === "dark" ? "text-purple-400" : "text-purple-800"
+                  darkMode ? "text-purple-400" : "text-purple-800"
                 }`}
               >
                 bright,
@@ -76,15 +70,13 @@ export default function Banner() {
             </p>
             <p className="text-xl md:text-2xl">
               <span
-                className={`${
-                  theme === "dark" ? "text-green-400" : "text-green-600"
-                }`}
+                className={`${darkMode ? "text-green-400" : "text-green-600"}`}
               >
                 Advance Health Service,{" "}
               </span>
               <span
                 className={`${
-                  theme === "dark" ? "text-purple-400" : "text-purple-800"
+                  darkMode ? "text-purple-400" : "text-purple-800"
                 }`}
               >
                 day and night!
@@ -95,7 +87,7 @@ export default function Banner() {
           <button
             className={`mt-6 px-8 py-3 rounded-full font-semibold transition-colors duration-300 shadow-lg hover:shadow-xl 
             ${
-              theme === "dark"
+              darkMode
                 ? "bg-red-500 hover:bg-red-400 text-gray-900"
                 : "bg-[#ff4d4d] hover:bg-[#ff3333] text-white"
             }`}

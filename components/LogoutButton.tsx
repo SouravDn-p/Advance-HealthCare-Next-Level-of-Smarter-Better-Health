@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout } from "@/redux/api/slice/authSlice";
 import { LogOut } from "lucide-react";
 
 interface LogoutButtonProps {
@@ -8,11 +9,14 @@ interface LogoutButtonProps {
   onClick?: () => void;
 }
 
-export default function LogoutButton({ className = "", onClick }: LogoutButtonProps) {
-  const { logout } = useAuth();
+export default function LogoutButton({
+  className = "",
+  onClick,
+}: LogoutButtonProps) {
+  const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     if (onClick) onClick();
   };
 
